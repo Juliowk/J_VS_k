@@ -6,13 +6,14 @@ import './styles/slot.css';
 import { startAmbient } from './anim/ambient';
 import { initSlot } from './anim/slot';
 import { enterFullscreen } from './fullscreen';
+import { isMuted, setMuted } from './sfx';
 import {
   backToMenu, canEnd, canType, chooseTarget, clickChip, endMatch, game, go, isTaken, rematch,
 } from './state';
 import { $, $$, mountAvatars } from './ui/dom';
 import { ICON } from './ui/icons';
 import { initKeypad } from './ui/keypad';
-import { hide, show } from './ui/screens';
+import { initModal } from './ui/modal';
 
 mountAvatars();
 for (const crown of $$('.crown')) crown.innerHTML = ICON.crown;
@@ -27,39 +28,37 @@ $('#btn-play').addEventListener('click', () => {
   void go('INTRO');
 });
 
-$('#board').addEventListener('click', (e) => {
+const board = $('#board');
+board.addEventListener('click', (e) => {
   const el = (e.target as Element).closest<HTMLButtonElement>('.chip');
   const chip = el && game.chips.find((c) => c.el === el);
   if (chip) clickChip(chip);
 });
+board.addEventListener('contextmenu', (e) => e.preventDefault());
 
 $('#btn-rematch').addEventListener('click', rematch);
 $('#btn-menu').addEventListener('click', backToMenu);
 
-/* Modal de encerrar */
-const modal = $('#modal');
-
-function openModal() {
-  if (!canEnd() || game.modalOpen) return;
-  game.modalOpen = true;
-  show(modal);
-  $('#modal-cancel').focus();
-}
-
-function closeModal() {
-  game.modalOpen = false;
-  hide(modal);
-}
-
-$('#btn-end').addEventListener('click', openModal);
-$('#modal-cancel').addEventListener('click', closeModal);
-$('#modal-confirm').addEventListener('click', () => {
-  closeModal();
-  if (canEnd()) endMatch();
+const modal = initModal({
+  canOpen: canEnd,
+  onOpenChange: (open) => { game.modalOpen = open; },
+  onConfirm: () => { if (canEnd()) endMatch(); },
 });
-window.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && game.modalOpen) closeModal();
+$('#btn-end').addEventListener('click', modal.show);
+
+/* Botão de mudo, com o estado salvo no navegador */
+const mute = $('#btn-mute');
+const renderMute = () => {
+  const m = isMuted();
+  mute.innerHTML = m ? ICON.soundOff : ICON.soundOn;
+  mute.setAttribute('aria-pressed', String(m));
+  mute.setAttribute('aria-label', m ? 'Som desligado' : 'Som ligado');
+};
+mute.addEventListener('click', () => {
+  setMuted(!isMuted());
+  renderMute();
 });
+renderMute();
 
 if (import.meta.env.DEV) Object.assign(window, { __game: game });
 
