@@ -9,7 +9,7 @@ import { slotTl } from './anim/slot';
 import { spawnTl } from './anim/spawn';
 import { startTension, stopTension } from './anim/tension';
 import { turnSwapTl } from './anim/turnSwap';
-import { renderVictory } from './anim/victory';
+import { resetVictoryStage, victoryExitTl, victoryTl } from './anim/victory';
 import { buildBoard } from './board';
 import { IDS, other } from './players';
 import { Timer } from './timer';
@@ -17,7 +17,7 @@ import type { Chip, MatchResult, Phase, PlayerId, PlayerStats, Round } from './t
 import { $ } from './ui/dom';
 import * as hud from './ui/hud';
 import { resetKeypad } from './ui/keypad';
-import { hide, setActive, setDim, show } from './ui/screens';
+import { hide, setActive, setDim } from './ui/screens';
 
 export const TOTAL = 50;
 export const MISS_PENALTY_MS = 0;   // ex.: 1000 para +1 s por erro
@@ -106,11 +106,8 @@ function startRound() {
 
 /** Heróis e VS de volta ao estado neutro (sem destaque do sorteio nem da vitória). */
 function resetStage() {
+  resetVictoryStage();
   gsap.set(['.hero', '.vs'], { clearProps: 'all' });
-}
-
-function leaveVictory() {
-  return gsap.to(['#victory', '.hero', '.vs'], { autoAlpha: 0, duration: D(0.3) });
 }
 
 type Transition = (prev: Phase) => Promise<Phase | void> | Phase | void;
@@ -119,7 +116,7 @@ const transitions: Record<Phase, Transition> = {
   async MENU(prev) {
     timer.stop();
     stopTension();
-    if (prev === 'FIM') await leaveVictory();
+    if (prev === 'FIM') await victoryExitTl();
     hide(['#game', '#keypad-layer', '#victory']);
     setDim(null);
     resetStage();
@@ -128,7 +125,7 @@ const transitions: Record<Phase, Transition> = {
 
   async INTRO(prev): Promise<Phase> {
     if (prev === 'MENU') await menuExitTl();
-    else await leaveVictory();
+    else await victoryExitTl();
     hide(['#menu', '#victory']);
     resetStage();
     newMatch();
@@ -194,15 +191,13 @@ const transitions: Record<Phase, Transition> = {
     return 'DESAFIO';
   },
 
-  FIM() {
+  async FIM() {
     timer.stop();   // uma busca interrompida pelo "Encerrar" não conta
     stopTension();
-    gsap.set('#board', { filter: SHARP });
-    hide(['#keypad-layer', '#game']);
     setDim(null);
-    const result = computeResult();
-    renderVictory(result);
-    show(['#victory', '.hero', '.vs']);
+    gsap.to('#keypad-layer', { autoAlpha: 0, duration: D(0.25) });
+    gsap.to('#board', { filter: SHARP, duration: D(0.3) });
+    await victoryTl(computeResult());
   },
 };
 
