@@ -2,6 +2,8 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/board.css';
 import './styles/hud.css';
+import './styles/slot.css';
+import { initSlot } from './anim/slot';
 import { enterFullscreen } from './fullscreen';
 import {
   backToMenu, canEnd, canType, chooseTarget, clickChip, endMatch, game, go, isTaken, rematch,
@@ -15,6 +17,7 @@ mountAvatars();
 for (const crown of $$('.crown')) crown.innerHTML = ICON.crown;
 
 initKeypad({ canInput: canType, isTaken, onSubmit: chooseTarget });
+initSlot();
 
 $('#btn-play').addEventListener('click', () => {
   if (game.phase !== 'MENU' || game.locked) return;

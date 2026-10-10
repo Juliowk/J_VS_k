@@ -3,6 +3,7 @@ import { SHARP, challengeTl } from './anim/challenge';
 import { markTl } from './anim/mark';
 import { missTl } from './anim/miss';
 import { revealTl } from './anim/reveal';
+import { slotTl } from './anim/slot';
 import { startTension, stopTension } from './anim/tension';
 import { turnSwapTl } from './anim/turnSwap';
 import { renderVictory } from './anim/victory';
@@ -113,13 +114,17 @@ const transitions: Record<Phase, Transition> = {
 
   INTRO() {
     hide(['#menu', '#victory']);
+    gsap.set('.hero', { clearProps: 'all' });
+    show(['.hero', '.vs']);
     newMatch();
     return 'SORTEIO';
   },
 
-  SORTEIO() {
+  async SORTEIO(): Promise<Phase> {
+    // Sorteado antes; o caça-níquel só encena o resultado
     game.chooser = Math.random() < 0.5 ? 'julio' : 'karen';
     game.seeker = other(game.chooser);
+    await slotTl(game.chooser);
     return 'SPAWN';
   },
 

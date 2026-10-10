@@ -1,0 +1,228 @@
+.slot-layer {
+  z-index: var(--z-slot);
+  pointer-events: none;
+}
+
+.slot-machine {
+  --sym: clamp(52px, 10vh, 116px);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4vh;
+  padding: 2vh 2.2vw 2.2vh;
+  border: 0.6vh solid transparent;
+  border-radius: 3.4vh 3.4vh 2vh 2vh;
+  background:
+    linear-gradient(180deg, #2b2f45, #151827 60%, #0c0e18) padding-box,
+    linear-gradient(90deg, var(--j-accent), #fff 50%, var(--k-accent)) border-box;
+  box-shadow: 0 3vh 8vh rgba(0, 0, 0, 0.7), 0 0 6vh rgba(255, 255, 255, 0.08);
+  will-change: transform;
+}
+
+.slot-lamps {
+  display: flex;
+  gap: 0.9vw;
+}
+
+.lamp {
+  width: 1.6vh;
+  height: 1.6vh;
+  border-radius: 50%;
+  background: #2a2a33;
+}
+
+.slot-lamps .lamp:nth-child(odd),
+.slot-lamps.alt .lamp:nth-child(even) {
+  background: var(--j-accent);
+  box-shadow: 0 0 1.4vh var(--j-accent);
+}
+
+.slot-lamps .lamp:nth-child(even),
+.slot-lamps.alt .lamp:nth-child(odd) {
+  background: var(--k-accent);
+  box-shadow: 0 0 1.4vh var(--k-accent);
+}
+
+.slot-lamps.win .lamp {
+  background: var(--win);
+  box-shadow: 0 0 1.8vh var(--win);
+}
+
+.slot-lamps.win.alt .lamp {
+  background: #2a2a33;
+  box-shadow: none;
+}
+
+.slot-title {
+  font-family: var(--font-j);
+  font-size: clamp(22px, 4vh, 44px);
+  letter-spacing: 0.12em;
+  line-height: 1;
+  background: linear-gradient(90deg, var(--j-accent), #fff, var(--k-accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.slot-window {
+  position: relative;
+  display: flex;
+  gap: 0.8vw;
+  padding: 1vh;
+  border-radius: 1.6vh;
+  background: #07080e;
+  box-shadow: inset 0 0 2vh #000;
+}
+
+.reel {
+  position: relative;
+  width: calc(var(--sym) * 1.25);
+  height: calc(var(--sym) * 3);
+  overflow: hidden;
+  border-radius: 1vh;
+  background: linear-gradient(180deg, #a59d8f, var(--bone) 28%, var(--bone) 72%, #a59d8f);
+  will-change: transform;
+}
+
+.reel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent 30%, transparent 70%, rgba(0, 0, 0, 0.55));
+  pointer-events: none;
+}
+
+.strip {
+  will-change: transform;
+}
+
+.sym {
+  height: var(--sym);
+  display: grid;
+  place-items: center;
+}
+
+.sym svg {
+  width: 70%;
+  height: 70%;
+}
+
+.sym-bat {
+  color: #0e1322;
+}
+
+.sym-moon {
+  color: #e8941c;
+}
+
+.sym-skull {
+  color: #7d4bbb;
+}
+
+.sym-bow {
+  color: #ff4f98;
+}
+
+.slot-winline {
+  position: absolute;
+  left: 0.3vw;
+  right: 0.3vw;
+  top: 50%;
+  height: 3px;
+  margin-top: -1.5px;
+  background: var(--winline, #fff);
+  box-shadow: 0 0 1.2vh var(--winline, #fff);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.slot-legend {
+  display: flex;
+  gap: 2vw;
+  font-size: clamp(10px, 1.5vh, 16px);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.legend-j {
+  color: var(--j-accent);
+}
+
+.legend-k {
+  color: var(--k-accent);
+}
+
+.slot-lever {
+  position: absolute;
+  right: -2.8vw;
+  top: 26%;
+  width: 2.4vw;
+  height: 22vh;
+  transform-origin: 50% 100%;
+}
+
+.slot-lever::after {
+  content: '';
+  position: absolute;
+  left: -0.4vw;
+  bottom: -1.4vh;
+  width: 3.2vw;
+  height: 3vh;
+  border-radius: 1vh;
+  background: linear-gradient(180deg, #3a3f58, #1b1e2c);
+}
+
+.lever-stick {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0.9vh;
+  height: 100%;
+  margin-left: -0.45vh;
+  border-radius: 1vh;
+  background: linear-gradient(90deg, #8a8a8a, #f2f2f2, #7a7a7a);
+}
+
+.lever-ball {
+  position: absolute;
+  left: 50%;
+  top: -2.4vh;
+  width: 4.6vh;
+  height: 4.6vh;
+  margin-left: -2.3vh;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff, var(--error) 45%, #7a1013);
+  box-shadow: 0 0.6vh 1.2vh rgba(0, 0, 0, 0.5);
+}
+
+.slot-banner {
+  position: absolute;
+  inset: 52% 0 0;
+  margin: auto;
+  width: fit-content;
+  height: fit-content;
+  padding: 2vh 4vw 2.2vh;
+  text-align: center;
+  color: var(--chip-ink);
+  background: var(--banner-bg, var(--bone));
+  border-radius: 2vh;
+  box-shadow: 0 2vh 6vh rgba(0, 0, 0, 0.6), 0 0 0 0.5vh rgba(255, 255, 255, 0.85);
+  visibility: hidden;
+  opacity: 0;
+  will-change: transform;
+}
+
+.banner-main {
+  font-size: clamp(40px, 10vh, 120px);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.banner-sub {
+  margin-top: 0.8vh;
+  font-size: clamp(13px, 2.4vh, 26px);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
