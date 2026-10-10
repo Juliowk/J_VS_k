@@ -27,6 +27,7 @@ export const keypadEls = {
 };
 
 let value = '';
+let rejected = false;   // depois de um número recusado, o próximo dígito recomeça o campo
 let opts: KeypadOpts;
 
 const isValid = (v: string) => {
@@ -61,13 +62,15 @@ function handle(key: string) {
   sfx.key();
   if (key === 'C') value = '';
   else if (key === '⌫') value = value.slice(0, -1);
-  else value = value.length >= 2 ? key : value + key;
+  else value = value.length >= 2 || rejected ? key : value + key;
+  rejected = false;
   clearError();
   render(/\d/.test(key));
 }
 
 function reject(message: string) {
   const { field, msg } = keypadEls;
+  rejected = true;
   sfx.error();
   field.classList.add('error');
   msg.textContent = message;
@@ -121,7 +124,9 @@ export function initKeypad(o: KeypadOpts) {
 export function resetKeypad(chooser: PlayerId) {
   const p = PLAYERS[chooser];
   value = '';
+  rejected = false;
   clearError();
+  keypadEls.display.style.visibility = '';
   keypadEls.name.textContent = p.name;
   keypadEls.name.style.fontFamily = p.font;
   fillAvatar(keypadEls.avatar, chooser);

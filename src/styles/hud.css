@@ -173,6 +173,11 @@
 
 .keypad-layer {
   z-index: var(--z-keypad);
+  pointer-events: none;
+}
+
+.keypad-layer .keypad {
+  pointer-events: auto;
 }
 
 .keypad {

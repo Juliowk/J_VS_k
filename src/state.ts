@@ -1,20 +1,22 @@
 import gsap from 'gsap';
+import { SHARP, challengeTl } from './anim/challenge';
 import { markTl } from './anim/mark';
 import { missTl } from './anim/miss';
+import { revealTl } from './anim/reveal';
+import { startTension, stopTension } from './anim/tension';
 import { renderVictory } from './anim/victory';
 import { buildBoard } from './board';
-import { IDS, PLAYERS, other } from './players';
+import { IDS, other } from './players';
 import { Timer } from './timer';
 import type { Chip, MatchResult, Phase, PlayerId, PlayerStats, Round } from './types';
 import { $ } from './ui/dom';
 import * as hud from './ui/hud';
-import { keypadEls, resetKeypad } from './ui/keypad';
-import { hide, show } from './ui/screens';
+import { resetKeypad } from './ui/keypad';
+import { hide, setDim, show } from './ui/screens';
 
 export const TOTAL = 50;
 export const MISS_PENALTY_MS = 0;   // ex.: 1000 para +1 s por erro
 export const COUNTDOWN = 3;
-export const BLUR_PX = 14;
 
 interface Game {
   phase: Phase;
@@ -46,15 +48,6 @@ export const timer = new Timer(hud.setTimer);
 
 export const markedCount = () => game.chips.filter((c) => c.markedBy).length;
 export const isTaken = (n: number) => game.chips.some((c) => c.n === n && c.markedBy);
-
-export function setActive(id: PlayerId) {
-  document.documentElement.style.setProperty('--active', PLAYERS[id].accent);
-}
-
-function setDim(dimmed: PlayerId | null) {
-  $('.side-j').classList.toggle('dim', dimmed === 'julio');
-  $('.side-k').classList.toggle('dim', dimmed === 'karen');
-}
 
 function newMatch() {
   timer.stop();
@@ -111,6 +104,7 @@ type Transition = (prev: Phase) => Promise<Phase | void> | Phase | void;
 const transitions: Record<Phase, Transition> = {
   MENU() {
     timer.stop();
+    stopTension();
     hide(['#game', '#keypad-layer', '#victory']);
     show(['#menu', '.hero', '.vs']);
     setDim(null);
@@ -134,31 +128,28 @@ const transitions: Record<Phase, Transition> = {
     return 'DESAFIO';
   },
 
-  DESAFIO() {
+  async DESAFIO() {
     startRound();
     hud.setRoles(game.chooser, game.seeker);
-    setActive(game.chooser);
-    setDim(null);
-    gsap.set('#board', { filter: `blur(${BLUR_PX}px) brightness(0.6)` });
+    setDim(game.seeker);
     resetKeypad(game.chooser);
-    show(keypadEls.layer);
+    await challengeTl(game.chooser);
   },
 
-  REVELACAO() {
-    hide(keypadEls.layer);
-    hud.setTarget(game.current!.target);
-    setActive(game.seeker);
-    setDim(game.chooser);
-    gsap.set('#board', { filter: 'blur(0px) brightness(1)' });
+  async REVELACAO(): Promise<Phase> {
+    const { target, chooser, seeker } = game.current!;
+    await revealTl({ target, chooser, seeker, count: COUNTDOWN });
     return 'BUSCA';
   },
 
   BUSCA() {
     timer.begin();
+    startTension();
   },
 
-  async ACERTO() {
+  async ACERTO(): Promise<Phase> {
     const ms = timer.stop();
+    stopTension();
     const chip = game.hit!;
     const round = game.current!;
     const from = game.totals[round.seeker];
@@ -178,6 +169,8 @@ const transitions: Record<Phase, Transition> = {
 
   FIM() {
     timer.stop();   // uma busca interrompida pelo "Encerrar" não conta
+    stopTension();
+    gsap.set('#board', { filter: SHARP });
     hide(['#keypad-layer', '#game']);
     setDim(null);
     const result = computeResult();
