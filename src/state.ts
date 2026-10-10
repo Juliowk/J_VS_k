@@ -1,8 +1,9 @@
 import gsap from 'gsap';
+import { renderVictory } from './anim/victory';
 import { buildBoard } from './board';
-import { PLAYERS, other } from './players';
+import { IDS, PLAYERS, other } from './players';
 import { Timer } from './timer';
-import type { Chip, Phase, PlayerId, Round } from './types';
+import type { Chip, MatchResult, Phase, PlayerId, PlayerStats, Round } from './types';
 import { $ } from './ui/dom';
 import * as hud from './ui/hud';
 import { keypadEls, resetKeypad } from './ui/keypad';
@@ -62,6 +63,36 @@ function newMatch() {
   game.chips = buildBoard($('#board'));
   hud.resetHud();
   setDim(null);
+}
+
+/**
+ * Menor tempo total vence. Se o número de buscas for desigual
+ * (partida encerrada no meio), compara pelo tempo médio.
+ * Empate exato na resolução mostrada (centésimos).
+ */
+export function computeResult(): MatchResult {
+  const stats = {} as Record<PlayerId, PlayerStats>;
+  for (const id of IDS) {
+    const done = game.rounds.filter((r) => r.seeker === id && r.timeMs !== undefined);
+    const total = done.reduce((a, r) => a + r.timeMs!, 0);
+    const fastest = done.reduce<Round | undefined>((b, r) => (!b || r.timeMs! < b.timeMs! ? r : b), undefined);
+    stats[id] = {
+      total,
+      count: done.length,
+      avg: done.length ? total / done.length : 0,
+      best: fastest && { ms: fastest.timeMs!, n: fastest.target },
+    };
+  }
+  const { julio: j, karen: k } = stats;
+  const byAverage = j.count !== k.count;
+  const comparable = j.count > 0 && k.count > 0;
+  let winner: PlayerId | null = null;
+  if (comparable) {
+    const cs = (ms: number) => Math.round(ms / 10);
+    const a = cs(byAverage ? j.avg : j.total), b = cs(byAverage ? k.avg : k.total);
+    if (a !== b) winner = a < b ? 'julio' : 'karen';
+  }
+  return { winner, byAverage, comparable, stats };
 }
 
 function startRound() {
@@ -145,8 +176,12 @@ const transitions: Record<Phase, Transition> = {
   },
 
   FIM() {
-    timer.stop();
+    timer.stop();   // uma busca interrompida pelo "Encerrar" não conta
     hide(['#keypad-layer', '#game']);
+    setDim(null);
+    const result = computeResult();
+    renderVictory(result);
+    show(['#victory', '.hero', '.vs']);
   },
 };
 
@@ -187,4 +222,12 @@ export const canEnd = () => (game.phase === 'DESAFIO' || game.phase === 'BUSCA')
 
 export function endMatch() {
   void go('FIM');
+}
+
+export function rematch() {
+  if (game.phase === 'FIM' && !game.locked) void go('INTRO');
+}
+
+export function backToMenu() {
+  if (game.phase === 'FIM' && !game.locked) void go('MENU');
 }

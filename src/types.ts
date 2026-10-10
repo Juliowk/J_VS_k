@@ -41,6 +41,7 @@ export interface PlayerStats {
 
 export interface MatchResult {
   winner: PlayerId | null;   // null = empate
-  byAverage: boolean;
+  byAverage: boolean;        // número de buscas desigual: compara pelo tempo médio
+  comparable: boolean;       // falso se algum jogador não completou nenhuma busca
   stats: Record<PlayerId, PlayerStats>;
 }

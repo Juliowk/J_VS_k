@@ -451,7 +451,13 @@
   display: grid;
   grid-template-columns: repeat(4, auto);
   justify-content: space-between;
-  gap: 0.4vh 1.2vw;
+  gap: 1.2vw;
+}
+
+.stat-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3vh;
 }
 
 .stat-label {

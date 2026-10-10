@@ -3,7 +3,9 @@ import './styles/base.css';
 import './styles/board.css';
 import './styles/hud.css';
 import { enterFullscreen } from './fullscreen';
-import { canEnd, canType, chooseTarget, clickChip, endMatch, game, go, isTaken } from './state';
+import {
+  backToMenu, canEnd, canType, chooseTarget, clickChip, endMatch, game, go, isTaken, rematch,
+} from './state';
 import { $, $$, mountAvatars } from './ui/dom';
 import { ICON } from './ui/icons';
 import { initKeypad } from './ui/keypad';
@@ -25,6 +27,9 @@ $('#board').addEventListener('click', (e) => {
   const chip = el && game.chips.find((c) => c.el === el);
   if (chip) clickChip(chip);
 });
+
+$('#btn-rematch').addEventListener('click', rematch);
+$('#btn-menu').addEventListener('click', backToMenu);
 
 /* Modal de encerrar */
 const modal = $('#modal');
