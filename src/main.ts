@@ -2,15 +2,55 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/board.css';
 import './styles/hud.css';
-import gsap from 'gsap';
-import { buildBoard } from './board';
+import { enterFullscreen } from './fullscreen';
+import { canEnd, canType, chooseTarget, clickChip, endMatch, game, go, isTaken } from './state';
 import { $, $$, mountAvatars } from './ui/dom';
 import { ICON } from './ui/icons';
+import { initKeypad } from './ui/keypad';
+import { hide, show } from './ui/screens';
 
 mountAvatars();
 for (const crown of $$('.crown')) crown.innerHTML = ICON.crown;
 
-gsap.set('#menu', { autoAlpha: 0 });
-gsap.set(['.hero', '.vs'], { autoAlpha: 0 });
-gsap.set('#game', { autoAlpha: 1 });
-buildBoard($('#board'));
+initKeypad({ canInput: canType, isTaken, onSubmit: chooseTarget });
+
+$('#btn-play').addEventListener('click', () => {
+  if (game.phase !== 'MENU' || game.locked) return;
+  void enterFullscreen();
+  void go('INTRO');
+});
+
+$('#board').addEventListener('click', (e) => {
+  const el = (e.target as Element).closest<HTMLButtonElement>('.chip');
+  const chip = el && game.chips.find((c) => c.el === el);
+  if (chip) clickChip(chip);
+});
+
+/* Modal de encerrar */
+const modal = $('#modal');
+
+function openModal() {
+  if (!canEnd() || game.modalOpen) return;
+  game.modalOpen = true;
+  show(modal);
+  $('#modal-cancel').focus();
+}
+
+function closeModal() {
+  game.modalOpen = false;
+  hide(modal);
+}
+
+$('#btn-end').addEventListener('click', openModal);
+$('#modal-cancel').addEventListener('click', closeModal);
+$('#modal-confirm').addEventListener('click', () => {
+  closeModal();
+  if (canEnd()) endMatch();
+});
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && game.modalOpen) closeModal();
+});
+
+if (import.meta.env.DEV) Object.assign(window, { __game: game });
+
+void go('MENU');
