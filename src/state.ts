@@ -4,6 +4,7 @@ import { markTl } from './anim/mark';
 import { missTl } from './anim/miss';
 import { revealTl } from './anim/reveal';
 import { startTension, stopTension } from './anim/tension';
+import { turnSwapTl } from './anim/turnSwap';
 import { renderVictory } from './anim/victory';
 import { buildBoard } from './board';
 import { IDS, other } from './players';
@@ -12,7 +13,7 @@ import type { Chip, MatchResult, Phase, PlayerId, PlayerStats, Round } from './t
 import { $ } from './ui/dom';
 import * as hud from './ui/hud';
 import { resetKeypad } from './ui/keypad';
-import { hide, setDim, show } from './ui/screens';
+import { hide, setActive, setDim, show } from './ui/screens';
 
 export const TOTAL = 50;
 export const MISS_PENALTY_MS = 0;   // ex.: 1000 para +1 s por erro
@@ -161,9 +162,15 @@ const transitions: Record<Phase, Transition> = {
     return markedCount() === TOTAL ? 'FIM' : 'TROCA';
   },
 
-  TROCA() {
+  async TROCA(): Promise<Phase> {
     [game.chooser, game.seeker] = [game.seeker, game.chooser];
-    hud.setTarget(null);
+    await turnSwapTl(game.chooser, () => {
+      setActive(game.chooser);
+      setDim(game.seeker);
+      hud.setTarget(null);
+      hud.setTimer(0);
+      hud.setTimerColor(game.seeker);
+    });
     return 'DESAFIO';
   },
 
