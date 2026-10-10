@@ -1,4 +1,6 @@
 import gsap from 'gsap';
+import { markTl } from './anim/mark';
+import { missTl } from './anim/miss';
 import { renderVictory } from './anim/victory';
 import { buildBoard } from './board';
 import { IDS, PLAYERS, other } from './players';
@@ -155,17 +157,16 @@ const transitions: Record<Phase, Transition> = {
     timer.begin();
   },
 
-  ACERTO() {
+  async ACERTO() {
     const ms = timer.stop();
     const chip = game.hit!;
     const round = game.current!;
+    const from = game.totals[round.seeker];
     round.timeMs = ms;
     game.rounds.push(round);
     game.totals[round.seeker] += ms;
     chip.markedBy = round.seeker;
-    chip.el.classList.add(`marked-${round.seeker}`);
-    chip.el.disabled = true;
-    hud.renderTotal(round.seeker, game.totals[round.seeker]);
+    await markTl({ chip, seeker: round.seeker, ms, from, to: game.totals[round.seeker] });
     return markedCount() === TOTAL ? 'FIM' : 'TROCA';
   },
 
@@ -215,6 +216,7 @@ export function clickChip(chip: Chip) {
   } else {
     game.current!.misses++;
     if (MISS_PENALTY_MS > 0) timer.add(MISS_PENALTY_MS);
+    missTl(chip, MISS_PENALTY_MS);
   }
 }
 
