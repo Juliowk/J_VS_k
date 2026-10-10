@@ -150,13 +150,16 @@ export function victoryTl(r: MatchResult) {
   const tl = gsap.timeline();
 
   // 1. Fichas restantes caem
-  tl.to(remaining, {
-    y: `+=${window.innerHeight}`,
-    rotation: 'random(-200, 200)',
-    duration: D(0.8),
-    ease: 'power2.in',
-    stagger: { each: 0.01, from: 'random' },
-  }).to('#game', { autoAlpha: 0, duration: D(0.4) }, '-=0.3');
+  if (remaining.length) {
+    tl.to(remaining, {
+      y: `+=${window.innerHeight}`,
+      rotation: 'random(-200, 200)',
+      duration: D(0.8),
+      ease: 'power2.in',
+      stagger: { each: 0.01, from: 'random' },
+    });
+  }
+  tl.to('#game', { autoAlpha: 0, duration: D(0.4) }, remaining.length ? '-=0.3' : 0.3);
 
   // Palco volta, mais alto, sem o VS
   tl.add(() => {
