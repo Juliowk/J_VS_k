@@ -111,6 +111,7 @@ export const sfx = {
   },
   miss: () => tone(180, 0.2, { type: 'sawtooth', vol: 0.08, slideTo: 90 }),
   whoosh: () => noise(0.45, { vol: 0.22, freq: 300, sweepTo: 3000, q: 1.5 }),
+  shuffle: () => [0, 0.12, 0.24, 0.36].forEach((delay) => noise(0.14, { vol: 0.14, freq: 900, sweepTo: 2600, q: 2, delay })),
   win: () => [392, 523, 659, 784, 659, 784, 1047].forEach((f, i) => tone(f, i === 6 ? 0.6 : 0.16, { type: 'triangle', vol: 0.16, delay: i * 0.12 })),
   tie: () => [523, 523, 659, 523].forEach((f, i) => tone(f, 0.2, { type: 'triangle', vol: 0.14, delay: i * 0.16 })),
 };

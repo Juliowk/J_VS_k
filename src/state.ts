@@ -5,12 +5,14 @@ import { missTl } from './anim/miss';
 import { D } from './anim/easings';
 import { introTl, menuEnterTl, menuExitTl } from './anim/intro';
 import { revealTl } from './anim/reveal';
+import { shuffleTl } from './anim/shuffle';
 import { slotTl } from './anim/slot';
 import { spawnTl } from './anim/spawn';
 import { startTension, stopTension } from './anim/tension';
 import { turnSwapTl } from './anim/turnSwap';
 import { resetVictoryStage, victoryExitTl, victoryTl } from './anim/victory';
-import { buildBoard } from './board';
+import { buildBoard, reshuffle } from './board';
+import { getLevel, LEVELS } from './difficulty';
 import { IDS, other } from './players';
 import { Timer } from './timer';
 import type { Chip, MatchResult, Phase, PlayerId, PlayerStats, Round } from './types';
@@ -19,7 +21,6 @@ import * as hud from './ui/hud';
 import { resetKeypad } from './ui/keypad';
 import { hide, setActive, setDim } from './ui/screens';
 
-export const TOTAL = 50;
 export const MISS_PENALTY_MS = 0;   // ex.: 1000 para +1 s por erro
 export const COUNTDOWN = 3;
 
@@ -27,6 +28,7 @@ interface Game {
   phase: Phase;
   locked: boolean;
   modalOpen: boolean;
+  total: number;   // quantidade de fichas do nível escolhido
   chooser: PlayerId;
   seeker: PlayerId;
   totals: Record<PlayerId, number>;
@@ -40,6 +42,7 @@ export const game: Game = {
   phase: 'MENU',
   locked: false,
   modalOpen: false,
+  total: LEVELS[getLevel()],
   chooser: 'julio',
   seeker: 'karen',
   totals: { julio: 0, karen: 0 },
@@ -60,8 +63,9 @@ function newMatch() {
   game.rounds = [];
   game.current = null;
   game.hit = null;
-  game.chips = buildBoard($('#board'));
-  hud.resetHud();
+  game.total = LEVELS[getLevel()];
+  game.chips = buildBoard($('#board'), game.total);
+  hud.resetHud(game.total);
   setDim(null);
 }
 
@@ -98,7 +102,7 @@ export function computeResult(): MatchResult {
 function startRound() {
   const index = game.rounds.length + 1;
   game.current = { index, chooser: game.chooser, seeker: game.seeker, target: 0, misses: 0 };
-  hud.setRound(index, TOTAL - markedCount());
+  hud.setRound(index, game.total - markedCount());
   hud.setTimer(0);
   hud.setTimerColor(game.seeker);
   hud.setTarget(null);
@@ -176,10 +180,12 @@ const transitions: Record<Phase, Transition> = {
     game.totals[round.seeker] += ms;
     chip.markedBy = round.seeker;
     await markTl({ chip, seeker: round.seeker, ms, from, to: game.totals[round.seeker] });
-    return markedCount() === TOTAL ? 'FIM' : 'TROCA';
+    return markedCount() === game.total ? 'FIM' : 'TROCA';
   },
 
   async TROCA(): Promise<Phase> {
+    // Embaralha à vista dos dois antes da cortina
+    await shuffleTl(game.chips, reshuffle($('#board'), game.chips));
     [game.chooser, game.seeker] = [game.seeker, game.chooser];
     await turnSwapTl(game.chooser, () => {
       setActive(game.chooser);

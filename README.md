@@ -1,6 +1,6 @@
 # Júlio vs Karen
 
-Jogo web para dois jogadores. A cada rodada, um escolhe um número de 1 a 50 e o outro procura esse número no tabuleiro, contra o relógio. Vence quem tiver o menor tempo total de busca.
+Jogo web para dois jogadores. A cada rodada, um escolhe um número e o outro procura esse número no tabuleiro, contra o relógio. São três níveis: Fácil (1 a 50), Médio (1 a 100) e Difícil (1 a 150). As fichas ficam espalhadas, em qualquer giro, e trocam de lugar a cada turno. Vence quem tiver o menor tempo total de busca.
 
 Jogue em: https://juliowk.github.io/J_VS_k/
 

@@ -9,7 +9,7 @@ export interface Player {
 }
 
 export interface Chip {
-  n: number;          // 1..50
+  n: number;          // 1..total do nível (50, 100 ou 150)
   x: number;          // % da largura do tabuleiro
   y: number;          // % da altura
   rot: number;        // graus

@@ -56,7 +56,7 @@ export function setRoles(chooser: PlayerId, seeker: PlayerId) {
     .to(roles, { opacity: 1, duration: D(0.2), ease: 'power1.out' });
 }
 
-export function resetHud() {
+export function resetHud(total: number) {
   setTimer(0);
   setTimerColor(null);
   setTarget(null);
@@ -66,5 +66,5 @@ export function resetHud() {
     p.role.textContent = '—';
     p.root.classList.remove('is-seeker');
   }
-  setRound(1, 50);
+  setRound(1, total);
 }

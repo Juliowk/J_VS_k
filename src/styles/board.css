@@ -5,7 +5,8 @@
 
 .board {
   position: absolute;
-  inset: calc(var(--chip) * 0.72) calc(var(--chip) * 0.8);
+  inset: calc(var(--chip) * 0.25) calc(var(--chip) * 0.4);
+  --tile: var(--chip);   /* tamanho real da ficha, calculado em board.ts conforme a quantidade */
   filter: blur(0) brightness(1);
   will-change: filter;
   -webkit-touch-callout: none;
@@ -14,8 +15,8 @@
 /* O botão cuida da posição, giro e hover (CSS); a face é animada pelo GSAP. */
 .chip {
   position: absolute;
-  width: var(--chip);
-  height: var(--chip);
+  width: var(--tile);
+  height: var(--tile);
   padding: 0;
   border: 0;
   background: none;
@@ -33,17 +34,29 @@
   place-items: center;
   background: var(--bone);
   color: var(--chip-ink);
-  border: 3px solid var(--bone-border);
+  border: max(2px, calc(var(--tile) * 0.045)) solid var(--bone-border);
   border-radius: 22%;
-  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.35), 0 10px 18px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 calc(var(--tile) * 0.07) 0 rgba(0, 0, 0, 0.35), 0 calc(var(--tile) * 0.13) calc(var(--tile) * 0.24) rgba(0, 0, 0, 0.35);
   transition: border-color 0.12s, box-shadow 0.12s;
   will-change: transform;
 }
 
 .chip-n {
-  font: 700 calc(var(--chip) * 0.44) / 1 var(--font-ui);
+  font: 700 calc(var(--tile) * 0.44) / 1 var(--font-ui);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
+}
+
+/* Números que, de cabeça para baixo, viram outro (6/9, 18/81…): sublinhado como nas bolas de bilhar */
+.chip.is-ambiguous .chip-n {
+  text-decoration: underline;
+  text-decoration-thickness: 0.09em;
+  text-underline-offset: 0.12em;
+}
+
+/* Durante o embaralhamento o GSAP move as fichas; a transição do hover atrapalharia */
+.board.is-shuffling .chip {
+  transition: none;
 }
 
 /* Estado ativo: só durante a busca as fichas reagem ao mouse */

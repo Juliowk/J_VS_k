@@ -7,6 +7,7 @@ import { $, fillAvatar, h } from './dom';
 
 export interface KeypadOpts {
   canInput: () => boolean;
+  max: () => number;   // maior número do nível
   isTaken: (n: number) => boolean;
   onSubmit: (n: number) => void;
 }
@@ -32,7 +33,7 @@ let opts: KeypadOpts;
 
 const isValid = (v: string) => {
   const n = Number(v);
-  return v !== '' && n >= 1 && n <= 50 && !opts.isTaken(n);
+  return v !== '' && n >= 1 && n <= opts.max() && !opts.isTaken(n);
 };
 
 function render(flipLast: boolean) {
@@ -62,7 +63,7 @@ function handle(key: string) {
   sfx.key();
   if (key === 'C') value = '';
   else if (key === '⌫') value = value.slice(0, -1);
-  else value = value.length >= 2 || rejected ? key : value + key;
+  else value = value.length >= String(opts.max()).length || rejected ? key : value + key;
   rejected = false;
   clearError();
   render(/\d/.test(key));
@@ -82,7 +83,8 @@ function reject(message: string) {
 function submit() {
   press(keypadEls.launch);
   const n = Number(value);
-  if (value === '' || n < 1 || n > 50) return reject('Escolha um número de 1 a 50');
+  const max = opts.max();
+  if (value === '' || n < 1 || n > max) return reject(`Escolha um número de 1 a ${max}`);
   if (opts.isTaken(n)) return reject('Esse número já foi');
   opts.onSubmit(n);
 }

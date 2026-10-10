@@ -5,6 +5,8 @@ import './styles/hud.css';
 import './styles/slot.css';
 import { startAmbient } from './anim/ambient';
 import { initSlot } from './anim/slot';
+import { fitBoard } from './board';
+import { getLevel, type Level, setLevel } from './difficulty';
 import { enterFullscreen } from './fullscreen';
 import { isMuted, setMuted } from './sfx';
 import {
@@ -18,9 +20,23 @@ import { initModal } from './ui/modal';
 mountAvatars();
 for (const crown of $$('.crown')) crown.innerHTML = ICON.crown;
 
-initKeypad({ canInput: canType, isTaken, onSubmit: chooseTarget });
+initKeypad({ canInput: canType, max: () => game.total, isTaken, onSubmit: chooseTarget });
 initSlot();
 startAmbient();
+
+/* Dificuldade: 50, 100 ou 150 fichas, lembrada no navegador */
+const levelBtns = $$<HTMLButtonElement>('.level-btn');
+const renderLevel = () => {
+  for (const b of levelBtns) b.setAttribute('aria-checked', String(b.dataset.level === getLevel()));
+};
+for (const b of levelBtns) {
+  b.addEventListener('click', () => {
+    if (game.phase !== 'MENU' || game.locked) return;
+    setLevel(b.dataset.level as Level);
+    renderLevel();
+  });
+}
+renderLevel();
 
 $('#btn-play').addEventListener('click', () => {
   if (game.phase !== 'MENU' || game.locked) return;
@@ -35,6 +51,12 @@ board.addEventListener('click', (e) => {
   if (chip) clickChip(chip);
 });
 board.addEventListener('contextmenu', (e) => e.preventDefault());
+
+let resizeT = 0;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeT);
+  resizeT = window.setTimeout(() => fitBoard(board), 120);
+});
 
 $('#btn-rematch').addEventListener('click', rematch);
 $('#btn-menu').addEventListener('click', backToMenu);

@@ -4,7 +4,7 @@ import { $ } from '../ui/dom';
 import { D, EASE } from './easings';
 
 /**
- * Sai o palco versus, entra o HUD, e as 50 fichas brotam do centro do tabuleiro.
+ * Sai o palco versus, entra o HUD, e as fichas brotam do centro do tabuleiro.
  * Só transforms: cada face parte de um deslocamento até o centro, já convertido
  * para o referencial girado da ficha.
  */
@@ -35,7 +35,7 @@ export function spawnTl(chips: Chip[]) {
         opacity: 0,
         duration: D(0.7),
         ease: EASE.bounce,
-        stagger: { each: 0.015, from: 'random' },
+        stagger: { amount: 0.75, from: 'random' },
       },
       '-=0.35',
     )
