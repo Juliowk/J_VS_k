@@ -2,17 +2,19 @@
 
 Jogo web para dois jogadores. A cada rodada, um escolhe um número de 1 a 50 e o outro procura esse número no tabuleiro, contra o relógio. Vence quem tiver o menor tempo total de busca.
 
+Jogue em: https://juliowk.github.io/J_VS_k/
+
 ## Rodar localmente
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173/J_vs_K/
+npm run dev      # http://localhost:5173/J_VS_k/
 npm run build    # gera dist/
 ```
 
 ## Fotos
 
-Coloque `julio.jpg` e `karen.jpg` em `public/avatars/`. Sem elas, o jogo mostra a inicial de cada jogador.
+As fotos dos jogadores ficam em `public/avatars/` (`julio.jpg` e `karen.jpg`). Se uma delas faltar, o jogo mostra a inicial do jogador.
 
 ## Ajustes
 
@@ -23,11 +25,8 @@ Em `src/state.ts`:
 
 Em `src/anim/challenge.ts`, `BLUR_PX` controla o desfoque do tabuleiro enquanto o número é escolhido. Se ainda der para ler os números, suba para 20.
 
-## Publicar no GitHub Pages
+## Publicação
 
-```bash
-git remote add origin https://github.com/<seu-usuario>/J_vs_K.git
-git push -u origin main
-```
+O workflow `.github/workflows/deploy.yml` publica no GitHub Pages a cada push na `main`. No GitHub, a fonte do Pages precisa estar em **Settings → Pages → Source: GitHub Actions**.
 
-No GitHub, vá em **Settings → Pages → Source: GitHub Actions**. O workflow `.github/workflows/deploy.yml` publica a cada push na `main`, em `https://<seu-usuario>.github.io/J_vs_K/`. Se o repositório tiver outro nome, ajuste o `base` em `vite.config.ts`.
+O `base` em `vite.config.ts` precisa ser igual ao nome do repositório, com as mesmas maiúsculas e minúsculas (`/J_VS_k/`).

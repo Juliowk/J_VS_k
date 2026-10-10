@@ -1,3 +1,3 @@
 import { defineConfig } from 'vite';
 
-export default defineConfig({ base: '/J_vs_K/' });
+export default defineConfig({ base: '/J_VS_k/' });
