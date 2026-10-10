@@ -2,8 +2,11 @@ import gsap from 'gsap';
 import { SHARP, challengeTl } from './anim/challenge';
 import { markTl } from './anim/mark';
 import { missTl } from './anim/miss';
+import { D } from './anim/easings';
+import { introTl, menuEnterTl, menuExitTl } from './anim/intro';
 import { revealTl } from './anim/reveal';
 import { slotTl } from './anim/slot';
+import { spawnTl } from './anim/spawn';
 import { startTension, stopTension } from './anim/tension';
 import { turnSwapTl } from './anim/turnSwap';
 import { renderVictory } from './anim/victory';
@@ -101,22 +104,35 @@ function startRound() {
   hud.setTarget(null);
 }
 
+/** Heróis e VS de volta ao estado neutro (sem destaque do sorteio nem da vitória). */
+function resetStage() {
+  gsap.set(['.hero', '.vs'], { clearProps: 'all' });
+}
+
+function leaveVictory() {
+  return gsap.to(['#victory', '.hero', '.vs'], { autoAlpha: 0, duration: D(0.3) });
+}
+
 type Transition = (prev: Phase) => Promise<Phase | void> | Phase | void;
 
 const transitions: Record<Phase, Transition> = {
-  MENU() {
+  async MENU(prev) {
     timer.stop();
     stopTension();
+    if (prev === 'FIM') await leaveVictory();
     hide(['#game', '#keypad-layer', '#victory']);
-    show(['#menu', '.hero', '.vs']);
     setDim(null);
+    resetStage();
+    await menuEnterTl();
   },
 
-  INTRO() {
+  async INTRO(prev): Promise<Phase> {
+    if (prev === 'MENU') await menuExitTl();
+    else await leaveVictory();
     hide(['#menu', '#victory']);
-    gsap.set('.hero', { clearProps: 'all' });
-    show(['.hero', '.vs']);
+    resetStage();
     newMatch();
+    await introTl();
     return 'SORTEIO';
   },
 
@@ -128,9 +144,8 @@ const transitions: Record<Phase, Transition> = {
     return 'SPAWN';
   },
 
-  SPAWN() {
-    hide(['.hero', '.vs']);
-    show('#game');
+  async SPAWN(): Promise<Phase> {
+    await spawnTl(game.chips);
     return 'DESAFIO';
   },
 

@@ -3,6 +3,7 @@ import './styles/base.css';
 import './styles/board.css';
 import './styles/hud.css';
 import './styles/slot.css';
+import { startAmbient } from './anim/ambient';
 import { initSlot } from './anim/slot';
 import { enterFullscreen } from './fullscreen';
 import {
@@ -18,6 +19,7 @@ for (const crown of $$('.crown')) crown.innerHTML = ICON.crown;
 
 initKeypad({ canInput: canType, isTaken, onSubmit: chooseTarget });
 initSlot();
+startAmbient();
 
 $('#btn-play').addEventListener('click', () => {
   if (game.phase !== 'MENU' || game.locked) return;

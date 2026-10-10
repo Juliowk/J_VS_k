@@ -1,6 +1,7 @@
 import gsap from 'gsap';
 import { $ } from '../ui/dom';
 import { hudEls } from '../ui/hud';
+import { setAmbientSpeed } from './ambient';
 import { reduced } from './easings';
 
 let pulse: gsap.core.Timeline | null = null;
@@ -10,6 +11,7 @@ let calls: gsap.core.Tween[] = [];
 /** Vinheta pulsando na cor de quem procura; acelera aos 10 s, e o cronômetro treme aos 20 s. */
 export function startTension() {
   stopTension();
+  setAmbientSpeed(0.25);
   if (reduced) return;
   const glow = $('.frame-glow');
   pulse = gsap
@@ -38,6 +40,7 @@ export function stopTension() {
   calls.forEach((c) => c.kill());
   pulse = jitter = null;
   calls = [];
+  setAmbientSpeed(1);
   gsap.to('.frame-glow', { opacity: 0.55, duration: 0.3, overwrite: true });
   gsap.set(hudEls.timer, { x: 0, y: 0 });
 }
