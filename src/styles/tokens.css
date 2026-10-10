@@ -1,0 +1,64 @@
+@property --split-top {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 58%;
+}
+
+@property --split-bot {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 42%;
+}
+
+:root {
+  /* Júlio — Vigilante Noturno */
+  --j-bg: #0E1322;
+  --j-steel: #5B6B85;
+  --j-accent: #F2A93B;
+  --j-muted: #9AA6BC;
+
+  /* Karen — Gótica Fofa */
+  --k-bg: #1E0D26;
+  --k-purple: #6B3FA0;
+  --k-accent: #FF5FA2;
+  --k-muted: #E9D7FF;
+
+  /* Neutros */
+  --ink: #0B0F1A;
+  --bone: #EDE6DA;
+  --bone-border: #CFC6B6;
+  --chip-ink: #141217;
+  --error: #E5484D;
+
+  /* Cor do jogador ativo (trocada via JS) */
+  --active: var(--k-accent);
+
+  --font-j: 'Anton', sans-serif;
+  --font-k: 'Fredoka', sans-serif;
+  --font-ui: 'Space Grotesk', sans-serif;
+
+  --chip: clamp(48px, min(5.8vw, 10.5vh), 92px);   /* tamanho da ficha */
+  --split-top: 58%;
+  --split-bot: 42%;
+  --diag: polygon(0 0, var(--split-top) 0, var(--split-bot) 100%, 0 100%);
+  --diag-k: polygon(var(--split-top) 0, 100% 0, 100% 100%, var(--split-bot) 100%);
+
+  --hud-h: 14vh;
+  --foot-h: 8vh;
+  --hero-w: clamp(170px, 30vh, 360px);
+
+  /* Camadas */
+  --z-stage: 0;
+  --z-shade: 5;
+  --z-game: 10;
+  --z-menu: 15;
+  --z-keypad: 40;
+  --z-countdown: 50;
+  --z-slot: 60;
+  --z-curtain: 70;
+  --z-victory: 80;
+  --z-fx: 90;
+  --z-glow: 95;
+  --z-modal: 100;
+  --z-flash: 110;
+}

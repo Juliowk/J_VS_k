@@ -1,3 +1,7 @@
-import gsap from 'gsap';
+import './styles/tokens.css';
+import './styles/base.css';
+import { $$, mountAvatars } from './ui/dom';
+import { ICON } from './ui/icons';
 
-gsap.set('#app', { autoAlpha: 1 });
+mountAvatars();
+for (const crown of $$('.crown')) crown.innerHTML = ICON.crown;

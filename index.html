@@ -5,9 +5,186 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Júlio vs Karen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Fredoka:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
-  <body>
-    <div id="app"></div>
+  <body data-phase="MENU">
+    <svg class="defs" width="0" height="0" aria-hidden="true">
+      <filter id="vblur"><feGaussianBlur stdDeviation="0 5" /></filter>
+    </svg>
+
+    <div id="app">
+      <!-- Palco versus: fica sempre ao fundo -->
+      <div class="stage">
+        <section class="side side-j">
+          <div class="fog"></div>
+          <div class="bats"></div>
+        </section>
+        <section class="side side-k">
+          <div class="sparkles"></div>
+        </section>
+        <div class="seam"></div>
+
+        <div class="hero hero-j" data-player="julio">
+          <div class="hero-photo">
+            <div class="crown"></div>
+            <div class="hero-breath"><div class="avatar" data-avatar="julio"></div></div>
+          </div>
+          <div class="hero-name">JÚLIO</div>
+          <div class="hero-tag">vigilante noturno</div>
+        </div>
+
+        <div class="hero hero-k" data-player="karen">
+          <div class="hero-photo">
+            <div class="crown"></div>
+            <div class="hero-breath"><div class="avatar" data-avatar="karen"></div></div>
+          </div>
+          <div class="hero-name">Karen</div>
+          <div class="hero-tag">gótica fofa</div>
+        </div>
+
+        <div class="vs"><span class="vs-text">VS</span></div>
+      </div>
+
+      <div class="stage-shade"></div>
+
+      <!-- Jogo -->
+      <main class="game" id="game">
+        <header class="hud">
+          <div class="hud-player hud-j" data-player="julio">
+            <div class="avatar avatar-sm" data-avatar="julio"></div>
+            <div class="hud-info">
+              <div class="hud-name">JÚLIO</div>
+              <div class="hud-total"><span class="total-value">0,0 s</span> <small>total</small></div>
+            </div>
+            <div class="role-pill"><span class="role-text">—</span></div>
+          </div>
+
+          <div class="hud-center">
+            <div class="hud-target">
+              <span class="hud-target-label">ACHE O</span>
+              <span class="hud-target-num" id="hud-target">—</span>
+            </div>
+            <div class="hud-sep"></div>
+            <div class="hud-timer" id="hud-timer">00:00.00</div>
+          </div>
+
+          <div class="hud-player hud-k" data-player="karen">
+            <div class="avatar avatar-sm" data-avatar="karen"></div>
+            <div class="hud-info">
+              <div class="hud-name">Karen</div>
+              <div class="hud-total"><span class="total-value">0,0 s</span> <small>total</small></div>
+            </div>
+            <div class="role-pill"><span class="role-text">—</span></div>
+          </div>
+        </header>
+
+        <div class="board-wrap">
+          <div class="board" id="board" role="group" aria-label="Tabuleiro de números"></div>
+        </div>
+
+        <footer class="footbar">
+          <div class="round-info" id="round-info">RODADA 1 · 50 RESTANTES</div>
+          <div class="foot-actions">
+            <button class="btn btn-ghost" id="btn-end" type="button">ENCERRAR PARTIDA</button>
+          </div>
+        </footer>
+      </main>
+
+      <!-- Menu -->
+      <div class="menu" id="menu">
+        <div class="menu-top">
+          <div class="menu-kicker">o duelo dos números</div>
+        </div>
+        <div class="menu-bottom">
+          <button class="btn btn-play" id="btn-play" type="button">JOGAR</button>
+          <p class="menu-hint">Um escolhe, o outro procura. Vence o menor tempo total. <kbd>F11</kbd> tela cheia.</p>
+        </div>
+      </div>
+
+      <!-- Painel de escolha -->
+      <div class="layer keypad-layer" id="keypad-layer">
+        <div class="keypad" id="keypad" role="dialog" aria-label="Escolha do número">
+          <div class="kp-head">
+            <div class="avatar avatar-sm kp-avatar"></div>
+            <div class="kp-title"><span class="kp-name"></span>, escolha um número</div>
+          </div>
+          <div class="kp-field" id="kp-field">
+            <div class="kp-display" id="kp-display" aria-live="polite"></div>
+          </div>
+          <div class="kp-msg" id="kp-msg" aria-live="assertive"></div>
+          <div class="kp-keys" id="kp-keys"></div>
+          <button class="btn kp-launch" id="kp-launch" type="button">LANÇAR DESAFIO</button>
+          <div class="kp-note">Quem vai procurar: não olhe!</div>
+        </div>
+      </div>
+
+      <!-- Contagem 3-2-1 -->
+      <div class="layer countdown" id="countdown"><span class="countdown-num"></span></div>
+
+      <!-- Caça-níquel -->
+      <div class="layer slot-layer" id="slot-layer">
+        <div class="slot-machine" id="slot-machine">
+          <div class="slot-lamps" id="slot-lamps"></div>
+          <div class="slot-title">QUEM COMEÇA?</div>
+          <div class="slot-window">
+            <div class="reel"><div class="strip"></div></div>
+            <div class="reel"><div class="strip"></div></div>
+            <div class="reel"><div class="strip"></div></div>
+            <div class="slot-winline"></div>
+          </div>
+          <div class="slot-legend">
+            <span class="legend-j">morcego = Júlio</span>
+            <span class="legend-k">caveirinha = Karen</span>
+          </div>
+          <div class="slot-lever" id="slot-lever"><div class="lever-stick"></div><div class="lever-ball"></div></div>
+        </div>
+        <div class="slot-banner" id="slot-banner">
+          <div class="banner-main"></div>
+          <div class="banner-sub">escolhe o primeiro número</div>
+        </div>
+      </div>
+
+      <!-- Cortina de troca de vez -->
+      <div class="curtain" id="curtain"><span class="curtain-label"></span></div>
+
+      <!-- Fim de jogo -->
+      <div class="layer victory" id="victory">
+        <div class="victory-panel">
+          <h2 class="victory-title"></h2>
+          <div class="victory-sub"></div>
+          <div class="victory-stats"></div>
+          <div class="victory-actions">
+            <button class="btn btn-play btn-rematch" id="btn-rematch" type="button">REVANCHE</button>
+            <button class="btn btn-ghost" id="btn-menu" type="button">MENU</button>
+          </div>
+        </div>
+      </div>
+
+      <canvas class="confetti" id="confetti"></canvas>
+      <div class="fx" id="fx"></div>
+      <div class="frame-glow"></div>
+
+      <!-- Modal de encerrar -->
+      <div class="layer modal-layer" id="modal">
+        <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="modal-title">
+          <h3 id="modal-title">Encerrar a partida?</h3>
+          <p>O vencedor será decidido pelos tempos registrados até agora. Uma busca em andamento não conta.</p>
+          <div class="modal-actions">
+            <button class="btn btn-ghost" id="modal-cancel" type="button">CONTINUAR JOGANDO</button>
+            <button class="btn btn-danger" id="modal-confirm" type="button">ENCERRAR</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="mute" id="btn-mute" type="button" aria-label="Som ligado" aria-pressed="false"></button>
+      <div class="flash"></div>
+    </div>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
