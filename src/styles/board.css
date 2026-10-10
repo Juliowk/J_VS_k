@@ -1,0 +1,108 @@
+.board-wrap {
+  position: relative;
+  min-height: 0;
+}
+
+.board {
+  position: absolute;
+  inset: calc(var(--chip) * 0.72) calc(var(--chip) * 0.8);
+  filter: blur(0) brightness(1);
+  will-change: filter;
+  -webkit-touch-callout: none;
+}
+
+/* O botão cuida da posição, giro e hover (CSS); a face é animada pelo GSAP. */
+.chip {
+  position: absolute;
+  width: var(--chip);
+  height: var(--chip);
+  padding: 0;
+  border: 0;
+  background: none;
+  transform: translate(-50%, -50%) rotate(var(--rot));
+  transition: transform 0.12s ease-out;
+  cursor: default;
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chip-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--bone);
+  color: var(--chip-ink);
+  border: 3px solid var(--bone-border);
+  border-radius: 22%;
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.35), 0 10px 18px rgba(0, 0, 0, 0.35);
+  transition: border-color 0.12s, box-shadow 0.12s;
+  will-change: transform;
+}
+
+.chip-n {
+  font: 700 calc(var(--chip) * 0.44) / 1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Estado ativo: só durante a busca as fichas reagem ao mouse */
+body[data-phase='BUSCA'] .chip:not(:disabled) {
+  cursor: pointer;
+}
+
+body[data-phase='BUSCA'] .chip:not(:disabled):hover {
+  transform: translate(-50%, -50%) rotate(var(--rot)) translateY(-4px) scale(1.08);
+}
+
+body[data-phase='BUSCA'] .chip:not(:disabled):hover .chip-face {
+  border-color: var(--active);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--active) 80%, transparent);
+}
+
+.chip:focus-visible {
+  outline: none;
+}
+
+.chip:focus-visible .chip-face {
+  outline: 3px solid var(--active);
+  outline-offset: 3px;
+}
+
+/* Marcadas: forma diferente para cada jogador, além da cor */
+.chip.marked-julio,
+.chip.marked-karen {
+  opacity: 0.5;
+}
+
+.chip.marked-julio .chip-face {
+  background: var(--j-accent);
+  border-color: #b87414;
+  border-radius: 0;
+  clip-path: polygon(25% 4%, 75% 4%, 100% 50%, 75% 96%, 25% 96%, 0 50%);
+}
+
+.chip.marked-karen .chip-face {
+  background: var(--k-accent);
+  border-color: #c22f72;
+  border-radius: 50%;
+}
+
+.chip-x {
+  position: absolute;
+  inset: 8%;
+  width: 84%;
+  height: 84%;
+  fill: none;
+  stroke: var(--chip-ink);
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  pointer-events: none;
+}
+
+.chip.marked-julio .chip-x,
+.chip.marked-karen .chip-x {
+  stroke-dashoffset: 0;
+}
